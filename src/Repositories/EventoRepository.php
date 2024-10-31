@@ -115,4 +115,11 @@ class EventoRepository {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function excluirEventosPorNome($nome) {
+        $query = "DELETE FROM eventos WHERE nome = :nome OR evento_base_id IN (SELECT evento_id FROM eventos WHERE nome = :nome)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":nome", $nome, PDO::PARAM_STR);
+        return $stmt->execute();
+    }
+    
 }

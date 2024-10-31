@@ -6,6 +6,7 @@ use Backend\Api\Repositories\EventoRepository;
 use Backend\Api\Rotas\Router;
 use DateTime;
 use DateInterval;
+use DatePeriod;
 
 class EventoController {
     private $eventoRepository;
@@ -101,7 +102,7 @@ class EventoController {
     private function criarEventosRecorrentes(Evento $evento, $eventoBaseId) {
         $recorrencia = $evento->getRecorrencia();
         $dataInicial = new DateTime($evento->getDataInicial());
-        $dataFinal = new DateTime($evento->getDataFinal());
+        $dataFinalOriginal = new DateTime($evento->getDataFinal());
     
         $intervalo = match($recorrencia) {
             'diaria' => new DateInterval('P1D'),
@@ -111,15 +112,25 @@ class EventoController {
         };
     
         if ($intervalo) {
-            $periodo = new DatePeriod($dataInicial, $intervalo, $dataFinal);
+            $periodo = new DatePeriod($dataInicial, $intervalo, $dataFinalOriginal);
+            
             foreach ($periodo as $dataRecorrente) {
+                if ($recorrencia === 'semanal' && $dataRecorrente->format('N') !== $dataInicial->format('N')) {
+                    continue;
+                }
+    
                 $eventoRecorrente = clone $evento;
-                $eventoRecorrente->setDataInicial($dataRecorrente->format('Y-m-d'));
+                $dataRecorrenteFormatada = $dataRecorrente->format('Y-m-d');
+                $eventoRecorrente->setDataInicial($dataRecorrenteFormatada);
+                $eventoRecorrente->setDataFinal($dataRecorrenteFormatada);
                 $eventoRecorrente->setEventoBaseId($eventoBaseId);
+    
                 $this->eventoRepository->criarEvento($eventoRecorrente);
             }
         }
     }
+    
+    
 
     #[Router('/eventos/{id}', methods: ['PUT'])]
     public function atualizarEvento($id, $data) {
@@ -155,4 +166,16 @@ class EventoController {
             echo json_encode(['status' => false, 'mensagem' => 'Evento não encontrado']);
         }
     }
+
+    #[Router('/eventos/nome/{nome}', methods: ['DELETE'])]
+public function excluirEventosPorNome($nome) {
+    $eventosExcluidos = $this->eventoRepository->excluirEventosPorNome($nome);
+    if ($eventosExcluidos) {
+        http_response_code(200);
+        echo json_encode(['status' => true, 'message' => 'Evento(s) excluído(s) com sucesso.']);
+    } else {
+        http_response_code(404);
+        echo json_encode(['status' => false, 'message' => 'Evento não encontrado.']);
+    }
+}
 }
