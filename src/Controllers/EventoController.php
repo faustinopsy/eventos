@@ -1,7 +1,7 @@
 <?php
 namespace Backend\Api\Controllers;
 
-use Backend\Api\Models\Event;
+use Backend\Api\Models\Evento;
 use Backend\Api\Repositories\EventoRepository;
 use Backend\Api\Rotas\Router;
 
@@ -19,32 +19,74 @@ class EventoController {
         echo json_encode($eventos);
     }
 
+    #[Router('/eventos/{id}', methods: ['GET'])]
+    public function obterEventoPorId($id) {
+        $evento = $this->eventoRepository->obterEventoPorId($id);
+        if ($evento) {
+            http_response_code(200);
+            echo json_encode($evento);
+        } else {
+            http_response_code(404);
+            echo json_encode(['status' => false, 'message' => 'Evento não encontrado']);
+        }
+    }
+
+    #[Router('/eventos/nome/{nome:.+}', methods: ['GET'])]
+    public function obterEventoPorNome($nome) {
+        $evento = $this->eventoRepository->obterEventoPorNome($nome);
+        if ($evento) {
+            http_response_code(200);
+            echo json_encode($evento);
+        } else {
+            http_response_code(404);
+            echo json_encode(['status' => false, 'message' => 'Evento não encontrado']);
+        }
+    }
+
+    #[Router('/eventos/data/{dataini}/{datafim}', methods: ['GET'])]
+    public function obterEventosPorIntervaloDeData($dataini, $datafim) {
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataini) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $datafim)) {
+            http_response_code(400);
+            echo json_encode(['status' => false, 'message' => 'Formato de data inválido']);
+            return;
+        }
+        
+        $eventos = $this->eventoRepository->obterEventosPorIntervaloDeData($dataini, $datafim);
+        if ($eventos) {
+            http_response_code(200);
+            echo json_encode($eventos);
+        } else {
+            http_response_code(404);
+            echo json_encode(['status' => false, 'message' => 'Nenhum evento encontrado para o intervalo de datas especificado']);
+        }
+    }
+    
     #[Router('/eventos', methods: ['POST'])]
-    public function criarEvento($dados) {
-        $evento = new Event();
-        $evento->setTitulo($dados->titulo)
-               ->setDescricao($dados->descricao)
-               ->setDataInicial($dados->datainicial)
-               ->setDataFinal($dados->datafinal)
-               ->setRecorrencia($dados->recorrencia)
-               ->setNome($dados->nome);
+    public function criarEvento($data) {
+        $evento = new Evento();
+        $evento->setTitulo($data->titulo);
+        $evento->setDescricao($data->descricao);
+        $evento->setDataInicial($data->datainicial);
+        $evento->setDataFinal($data->datafinal);
+        $evento->setRecorrencia($data->recorrencia);
+        $evento->setNome($data->nome);
         $eventoCriado = $this->eventoRepository->criarEvento($evento);
         http_response_code(201);
         echo json_encode(['status' => $eventoCriado]);
     }
 
     #[Router('/eventos/{id}', methods: ['PUT'])]
-    public function atualizarEvento($id, $dados) {
+    public function atualizarEvento($id, $data) {
         $eventoExistente = $this->eventoRepository->obterEventoPorId($id);
         if ($eventoExistente) {
-            $evento = new Event();
-            $evento->setEventoId($id)
-                   ->setTitulo($dados->titulo ?? $eventoExistente['titulo'])
-                   ->setDescricao($dados->descricao ?? $eventoExistente['descricao'])
-                   ->setDataInicial($dados->datainicial ?? $eventoExistente['datainicial'])
-                   ->setDataFinal($dados->datafinal ?? $eventoExistente['datafinal'])
-                   ->setRecorrencia($dados->recorrencia ?? $eventoExistente['recorrencia'])
-                   ->setNome($dados->nome ?? $eventoExistente['nome']);
+            $evento = new Evento();
+            $evento->setEventoId($id);
+            $evento->setTitulo($data->titulo ?? $eventoExistente['titulo']);
+            $evento->setDescricao($data->descricao ?? $eventoExistente['descricao']);
+            $evento->setDataInicial($data->datainicial ?? $eventoExistente['datainicial']);
+            $evento->setDataFinal($data->datafinal ?? $eventoExistente['datafinal']);
+            $evento->setRecorrencia($data->recorrencia ?? $eventoExistente['recorrencia']);
+            $evento->setNome($data->nome ?? $eventoExistente['nome']);
             
             $eventoAtualizado = $this->eventoRepository->atualizarEvento($evento);
             if ($eventoAtualizado) {

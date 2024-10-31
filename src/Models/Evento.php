@@ -1,7 +1,7 @@
 <?php
 namespace Backend\Api\Models;
 
-class Event {
+class Evento {
     private $eventoId;
     private $titulo;
     private $descricao;
@@ -38,10 +38,10 @@ class Event {
          $this->datainicial = $datainicial;
         }
 
-    public function getDataFial() {
+    public function getDataFinal() {
          return $this->datafinal;
     }
-    public function setDataFInal($datafinal) {
+    public function setDataFinal($datafinal) {
          $this->datafinal = $datafinal;
         }
 

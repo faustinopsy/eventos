@@ -36,14 +36,22 @@ class EventoRepository {
     }
 
     public function criarEvento(Evento $evento) {
+        $titulo = $evento->getTitulo();
+        $descricao = $evento->getDescricao();
+        $datainicial = $evento->getDataInicial();
+        $datafinal = $evento->getDataFinal();
+        $recorrencia = $evento->getRecorrencia();
+        $nome = $evento->getNome();
+
         $query = "INSERT INTO eventos (titulo, descricao, datainicial, datafinal, recorrencia, nome) VALUES (:titulo, :descricao, :datainicial, :datafinal, :recorrencia, :nome)";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":titulo", $evento->getTitulo());
-        $stmt->bindParam(":descricao", $evento->getDescricao());
-        $stmt->bindParam(":datainicial", $evento->getDataInicial());
-        $stmt->bindParam(":datafinal", $evento->getDataFinal());
-        $stmt->bindParam(":recorrencia", $evento->getRecorrencia());
-        $stmt->bindParam(":nome", $evento->getNome());
+        $stmt->bindParam(":titulo", $titulo);
+        $stmt->bindParam(":descricao", $descricao);
+        $stmt->bindParam(":datainicial", $datainicial);
+        $stmt->bindParam(":datafinal", $datafinal);
+        $stmt->bindParam(":recorrencia", $recorrencia);
+        $stmt->bindParam(":nome", $nome);
+        
         return $stmt->execute();
     }
 
@@ -56,15 +64,24 @@ class EventoRepository {
     }
 
     public function atualizarEvento(Evento $evento) {
+        $titulo = $evento->getTitulo();
+        $descricao = $evento->getDescricao();
+        $datainicial = $evento->getDataInicial();
+        $datafinal = $evento->getDataFinal();
+        $recorrencia = $evento->getRecorrencia();
+        $nome = $evento->getNome();
+        $eventoId = $evento->getEventoId();
+
         $query = "UPDATE eventos SET titulo = :titulo, descricao = :descricao, datainicial = :datainicial, datafinal = :datafinal, recorrencia = :recorrencia, nome = :nome WHERE evento_id = :evento_id";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":titulo", $evento->getTitulo());
-        $stmt->bindParam(":descricao", $evento->getDescricao());
-        $stmt->bindParam(":datainicial", $evento->getDataInicial());
-        $stmt->bindParam(":datafinal", $evento->getDataFinal());
-        $stmt->bindParam(":recorrencia", $evento->getRecorrencia());
-        $stmt->bindParam(":nome", $evento->getNome());
-        $stmt->bindParam(":evento_id", $evento->getEventoId(), PDO::PARAM_INT);
+        $stmt->bindParam(":titulo", $titulo);
+        $stmt->bindParam(":descricao", $descricao);
+        $stmt->bindParam(":datainicial", $datainicial);
+        $stmt->bindParam(":datafinal", $datafinal);
+        $stmt->bindParam(":recorrencia", $recorrencia);
+        $stmt->bindParam(":nome", $nome);
+        $stmt->bindParam(":evento_id", $eventoId, PDO::PARAM_INT);
+        
         return $stmt->execute();
     }
 
@@ -74,4 +91,23 @@ class EventoRepository {
         $stmt->bindParam(":evento_id", $eventoId, PDO::PARAM_INT);
         return $stmt->execute();
     }
+
+    public function obterEventoPorNome($nome) {
+        $query = "SELECT * FROM eventos WHERE nome LIKE :nome";
+        $stmt = $this->conn->prepare($query);
+        $nome = $nome . '%';
+        $stmt->bindParam(":nome", $nome, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obterEventosPorIntervaloDeData($dataini, $datafim) {
+        $query = "SELECT * FROM eventos WHERE datainicial >= :dataini AND datafinal <= :datafim";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":dataini", $dataini);
+        $stmt->bindParam(":datafim", $datafim);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }

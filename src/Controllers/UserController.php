@@ -37,14 +37,6 @@ class UserController {
         http_response_code(200);
         echo json_encode(['dataInicial' => $dataini, 'dataFinal' => $datafim]);
     }
-    
-        
-    #[Router('/users', methods: ['GET'])]
-    public function getAllUsers() {
-        $users = $this->userRepository->getAllUsers();
-        http_response_code(200);
-        echo json_encode($users);
-    }
     #[Router('/users/{id}', methods: ['GET'])]
     public function getUserById($id) {
         $user = $this->userRepository->getUserById($id);
@@ -56,8 +48,14 @@ class UserController {
             echo json_encode(['status' => false, 'message' => 'Usuário não encontrado']);
         }
     }
+        
+    #[Router('/users', methods: ['GET'])]
+    public function getAllUsers() {
+        $users = $this->userRepository->getAllUsers();
+        http_response_code(200);
+        echo json_encode($users);
+    }
     
-
     #[Router('/users', methods: ['POST'])]
     public function createUser($data) {
         if($this->userRepository->getUsuarioByEmail($data->email)){
