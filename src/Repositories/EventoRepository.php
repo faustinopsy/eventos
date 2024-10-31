@@ -36,24 +36,29 @@ class EventoRepository {
     }
 
     public function criarEvento(Evento $evento) {
+        $query = "INSERT INTO eventos (evento_base_id, titulo, descricao, datainicial, datafinal, recorrencia, nome) 
+                  VALUES (:evento_base_id, :titulo, :descricao, :datainicial, :datafinal, :recorrencia, :nome)";
+        $stmt = $this->conn->prepare($query);
+    
+        $eventoBaseId = $evento->getEventoBaseId();
         $titulo = $evento->getTitulo();
         $descricao = $evento->getDescricao();
         $datainicial = $evento->getDataInicial();
         $datafinal = $evento->getDataFinal();
         $recorrencia = $evento->getRecorrencia();
         $nome = $evento->getNome();
-
-        $query = "INSERT INTO eventos (titulo, descricao, datainicial, datafinal, recorrencia, nome) VALUES (:titulo, :descricao, :datainicial, :datafinal, :recorrencia, :nome)";
-        $stmt = $this->conn->prepare($query);
+    
+        $stmt->bindParam(":evento_base_id", $eventoBaseId);
         $stmt->bindParam(":titulo", $titulo);
         $stmt->bindParam(":descricao", $descricao);
         $stmt->bindParam(":datainicial", $datainicial);
         $stmt->bindParam(":datafinal", $datafinal);
         $stmt->bindParam(":recorrencia", $recorrencia);
         $stmt->bindParam(":nome", $nome);
-        
+    
         return $stmt->execute();
     }
+    
 
     public function obterEventoPorId($eventoId) {
         $query = "SELECT * FROM eventos WHERE evento_id = :evento_id";

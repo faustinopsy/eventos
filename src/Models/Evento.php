@@ -3,6 +3,7 @@ namespace Backend\Api\Models;
 
 class Evento {
     private $eventoId;
+    private $eventobaseid;
     private $titulo;
     private $descricao;
     private $datainicial;
@@ -58,4 +59,12 @@ class Evento {
     public function setNome($nome) {
          $this->nome = $nome;
     }
+    public function getEventoBaseId() {
+        return $this->eventobaseid;
+    }
+    
+    public function setEventoBaseId($eventoBaseId) {
+        $this->eventobaseid = $eventoBaseId;
+    }
+    
 }

@@ -4,12 +4,31 @@ namespace Backend\Api\Controllers;
 use Backend\Api\Models\Evento;
 use Backend\Api\Repositories\EventoRepository;
 use Backend\Api\Rotas\Router;
+use DateTime;
+use DateInterval;
 
 class EventoController {
     private $eventoRepository;
 
     public function __construct() {
         $this->eventoRepository = new EventoRepository();
+    }
+
+    private function criarTabelaSeNaoExistir() {
+        $query = "
+            CREATE TABLE IF NOT EXISTS eventos (
+                evento_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                evento_base_id INTEGER NULL,
+                titulo TEXT NOT NULL,
+                descricao TEXT,
+                datainicial TEXT NOT NULL,
+                datafinal TEXT,
+                recorrencia TEXT,
+                nome TEXT NOT NULL,
+                FOREIGN KEY (evento_base_id) REFERENCES eventos(evento_id)
+            )
+        ";
+        $this->conexao->exec($query);
     }
 
     #[Router('/eventos', methods: ['GET'])]
@@ -60,7 +79,7 @@ class EventoController {
             echo json_encode(['status' => false, 'message' => 'Nenhum evento encontrado para o intervalo de datas especificado']);
         }
     }
-    
+
     #[Router('/eventos', methods: ['POST'])]
     public function criarEvento($data) {
         $evento = new Evento();
@@ -70,9 +89,36 @@ class EventoController {
         $evento->setDataFinal($data->datafinal);
         $evento->setRecorrencia($data->recorrencia);
         $evento->setNome($data->nome);
+
         $eventoCriado = $this->eventoRepository->criarEvento($evento);
+        if ($eventoCriado && $data->recorrencia !== 'nenhuma') {
+            $this->criarEventosRecorrentes($evento, $eventoCriado);
+        }
         http_response_code(201);
         echo json_encode(['status' => $eventoCriado]);
+    }
+
+    private function criarEventosRecorrentes(Evento $evento, $eventoBaseId) {
+        $recorrencia = $evento->getRecorrencia();
+        $dataInicial = new DateTime($evento->getDataInicial());
+        $dataFinal = new DateTime($evento->getDataFinal());
+    
+        $intervalo = match($recorrencia) {
+            'diaria' => new DateInterval('P1D'),
+            'semanal' => new DateInterval('P1W'),
+            'mensal' => new DateInterval('P1M'),
+            default => null,
+        };
+    
+        if ($intervalo) {
+            $periodo = new DatePeriod($dataInicial, $intervalo, $dataFinal);
+            foreach ($periodo as $dataRecorrente) {
+                $eventoRecorrente = clone $evento;
+                $eventoRecorrente->setDataInicial($dataRecorrente->format('Y-m-d'));
+                $eventoRecorrente->setEventoBaseId($eventoBaseId);
+                $this->eventoRepository->criarEvento($eventoRecorrente);
+            }
+        }
     }
 
     #[Router('/eventos/{id}', methods: ['PUT'])]
