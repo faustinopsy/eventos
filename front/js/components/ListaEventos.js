@@ -1,5 +1,4 @@
 export default {
-    props: ['eventos'],
     template: `
         <div>
             <select v-model="filtroNome" @change="buscarEventos">
@@ -11,11 +10,16 @@ export default {
     `,
     data() {
         return { 
+            eventos: '',
             filtroNome: '',
             usuarios: [] 
         };
     },
     methods: {
+        async buscaEvento() {
+            const response = await fetch('http://localhost:8080/eventos');
+            this.eventos = await response.json();
+        },
         buscarEventos() {
             const eventosFiltrados = this.filtroNome 
                 ? this.eventos.filter(evento => evento.nome === this.filtroNome) 
@@ -67,7 +71,8 @@ export default {
             this.usuarios = [...new Set(nomes)];
         }
     },
-    mounted() {
+   async mounted() {
+       await this.buscaEvento()
         this.carregarUsuarios();
         this.renderCalendar(this.eventos);
     }

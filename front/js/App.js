@@ -5,22 +5,9 @@ const app = Vue.createApp({
     components: { Navbar },
     template: `
         <Navbar />
-        <router-view @eventoCriado="buscarEventos" :eventos="eventos" ></router-view>
+        <router-view ></router-view>
     `,
-    data() {
-        return {
-            eventos: []
-        };
-    },
-    methods: {
-        async buscarEventos() {
-            const response = await fetch('http://localhost:8080/eventos');
-            this.eventos = await response.json();
-        }
-    },
-    mounted() {
-        this.buscarEventos();
-    }
+    
 });
 
 app.use(router);
