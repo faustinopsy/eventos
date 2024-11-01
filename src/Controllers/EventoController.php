@@ -103,7 +103,7 @@ class EventoController {
         $recorrencia = $evento->getRecorrencia();
         $dataInicial = new DateTime($evento->getDataInicial());
         $dataFinalOriginal = new DateTime($evento->getDataFinal());
-    
+
         $intervalo = match($recorrencia) {
             'diaria' => new DateInterval('P1D'),
             'semanal' => new DateInterval('P1W'),

@@ -14,6 +14,7 @@ export default {
         </select>
         <input v-model="evento.nome" placeholder="Nome do usuário" required />
         <button type="submit">Criar Evento</button>
+        <p v-if="mensagem">{{ mensagem }}</p>
       </form>
     `,
     data() {
@@ -25,17 +26,25 @@ export default {
                 datafinal: '', 
                 recorrencia: 'nenhuma', 
                 nome: '' 
-            }
+            },
+            mensagem: ''
         };
     },
     methods: {
         async criarEvento() {
-            await fetch('http://localhost:8080/eventos', {
+           const response = await fetch('http://localhost:8080/eventos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(this.evento)
             });
-            this.$emit('eventoCriado');
+            const result = await response.json();
+            if (result.status) {
+                this.mensagem = 'Evento(s) criado(s) com sucesso.';
+                this.$emit('eventoCriado');
+            } else {
+                this.mensagem = 'Evento não criado.';
+            }
+            
         }
     }
 };
