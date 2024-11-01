@@ -93,6 +93,7 @@ class EventoController {
             $evento->setDataFinal($data->datafinal);
             $evento->setRecorrencia($data->recorrencia);
             $evento->setNome($data->nome);
+            $evento->setCor($data->cor);
             $evento->setEventoBaseId($numerox);
             $eventoCriado = $this->eventoRepository->criarEvento($evento);
         } else {
@@ -103,6 +104,7 @@ class EventoController {
             $evento->setDataFinal($data->datafinal);
             $evento->setRecorrencia($data->recorrencia);
             $evento->setNome($data->nome);
+            $evento->setCor($data->cor);
             $evento->setEventoBaseId($numerox);
             
             $eventoCriado = $this->criarEventosRecorrentes($evento, $numerox);

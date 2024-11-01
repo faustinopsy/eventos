@@ -75,6 +75,7 @@ export default {
                     title: evento.titulo,
                     start: evento.datainicial,
                     end: evento.datafinal,
+                    backgroundColor: evento.cor,
                     extendedProps: {
                         id: evento.evento_base_id,
                         descricao: evento.descricao,

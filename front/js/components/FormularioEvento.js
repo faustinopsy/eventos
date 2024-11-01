@@ -1,7 +1,10 @@
 export default {
     template: `
       <form @submit.prevent="criarEvento">
-        <input v-model="evento.titulo" placeholder="Título" required />
+        <select v-model="evento.titulo" required>
+          <option disabled value="">Selecione uma sala</option>
+          <option v-for="(cor, titulo) in salas" :key="titulo" :value="titulo">{{ titulo }}</option>
+        </select>
         <input v-model="evento.descricao" placeholder="Descrição" />
         <input v-model="evento.datainicial" type="date" required />
         <input v-model="evento.datafinal" type="date" />
@@ -12,7 +15,10 @@ export default {
           <option value="mensal">Mensal</option>
           <option value="semestral">Semestral</option>
         </select>
-        <input v-model="evento.nome" placeholder="Nome do usuário" required />
+        <select v-model="evento.nome" required>
+          <option disabled value="">Nome do usuário</option>
+          <option v-for="user in usuarios" :key="user.nome" :value="user.nome">{{ user.nome }}</option>
+        </select>
         <button type="submit">Criar Evento</button>
         <p v-if="mensagem">{{ mensagem }}</p>
       </form>
@@ -25,14 +31,25 @@ export default {
                 datainicial: '', 
                 datafinal: '', 
                 recorrencia: 'nenhuma', 
-                nome: '' 
+                nome: '',
+                cor: ''
             },
-            mensagem: ''
+            mensagem: '',
+            salas: {
+                "Sala A": "#FF5733",
+                "Sala B": "#33FF57",
+                "Sala C": "#3357FF",
+                "Sala D": "#FF33A1",
+                "Sala E": "#A133FF"
+            },
+            usuarios:[]
         };
     },
     methods: {
         async criarEvento() {
-           const response = await fetch('http://localhost:8080/eventos', {
+            this.evento.cor = this.salas[this.evento.titulo];
+
+            const response = await fetch('http://localhost:8080/eventos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(this.evento)
@@ -44,7 +61,13 @@ export default {
             } else {
                 this.mensagem = 'Evento não criado.';
             }
-            
-        }
-    }
+        },
+        async buscaUsuarios() {
+            const response = await fetch('http://localhost:8080/users');
+            this.usuarios = await response.json();
+        },
+    },
+    async mounted() {
+       await this.buscaUsuarios()
+    },
 };

@@ -10,6 +10,7 @@ class Evento {
     private $datafinal;
     private $recorrencia;
     private $nome;
+    private $cor;
 
     public function getEventoId() {
         return $this->eventoId;
@@ -66,5 +67,11 @@ class Evento {
     public function setEventoBaseId($eventoBaseId) {
         $this->eventobaseid = $eventoBaseId;
     }
+    public function getCor() {
+        return $this->cor;
+    }
     
+    public function setCor($cor) {
+        $this->cor = $cor;
+    }
 }

@@ -23,7 +23,8 @@ class EventoRepository {
                 datafinal TEXT,
                 recorrencia TEXT,
                 nome TEXT NOT NULL,
-                evento_base_id TEXT
+                evento_base_id TEXT,
+                cor TEXT
             )
         ";
         $this->conn->exec($query);
@@ -37,8 +38,8 @@ class EventoRepository {
     }
 
     public function criarEvento(Evento $evento) {
-        $query = "INSERT INTO eventos (evento_base_id, titulo, descricao, datainicial, datafinal, recorrencia, nome)
-                  VALUES (:evento_base_id, :titulo, :descricao, :datainicial, :datafinal, :recorrencia, :nome)";
+        $query = "INSERT INTO eventos (evento_base_id, titulo, descricao, datainicial, datafinal, recorrencia, nome,cor)
+                  VALUES (:evento_base_id, :titulo, :descricao, :datainicial, :datafinal, :recorrencia, :nome, :cor)";
         $stmt = $this->conn->prepare($query);
     
         $eventoBaseId = $evento->getEventoBaseId();
@@ -48,6 +49,7 @@ class EventoRepository {
         $datafinal = $evento->getDataFinal();
         $recorrencia = $evento->getRecorrencia();
         $nome = $evento->getNome();
+        $cor = $evento->getCor();
     
         $stmt->bindParam(":evento_base_id", $eventoBaseId);
         $stmt->bindParam(":titulo", $titulo);
@@ -56,6 +58,7 @@ class EventoRepository {
         $stmt->bindParam(":datafinal", $datafinal);
         $stmt->bindParam(":recorrencia", $recorrencia);
         $stmt->bindParam(":nome", $nome);
+        $stmt->bindParam(":cor", $cor);
     
         return $stmt->execute();
     }
