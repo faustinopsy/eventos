@@ -52,7 +52,7 @@ export default {
 				// dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
 				initialDate: Date.now(),
 				navLinks: true,
-				selectable: false,
+				selectable: true,
 				nowIndicator: true,
 				dayMaxEvents: true,
 				editable: false,

@@ -83,27 +83,40 @@ class EventoController {
 
     #[Router('/eventos', methods: ['POST'])]
     public function criarEvento($data) {
-        $evento = new Evento();
-        $evento->setTitulo($data->titulo);
-        $evento->setDescricao($data->descricao);
-        $evento->setDataInicial($data->datainicial);
-        $evento->setDataFinal($data->datafinal);
-        $evento->setRecorrencia($data->recorrencia);
-        $evento->setNome($data->nome);
-
-        $eventoCriado = $this->eventoRepository->criarEvento($evento);
-        if ($eventoCriado && $data->recorrencia !== 'nenhuma') {
-            $this->criarEventosRecorrentes($evento, $eventoCriado);
+        $numerox = $this->gerarStringAlfanumerica(8);
+        
+        if ($data->recorrencia === 'nenhuma') {
+            $evento = new Evento();
+            $evento->setTitulo($data->titulo);
+            $evento->setDescricao($data->descricao);
+            $evento->setDataInicial($data->datainicial);
+            $evento->setDataFinal($data->datafinal);
+            $evento->setRecorrencia($data->recorrencia);
+            $evento->setNome($data->nome);
+            $evento->setEventoBaseId($numerox);
+            $eventoCriado = $this->eventoRepository->criarEvento($evento);
+        } else {
+            $evento = new Evento();
+            $evento->setTitulo($data->titulo);
+            $evento->setDescricao($data->descricao);
+            $evento->setDataInicial($data->datainicial);
+            $evento->setDataFinal($data->datafinal);
+            $evento->setRecorrencia($data->recorrencia);
+            $evento->setNome($data->nome);
+            $evento->setEventoBaseId($numerox);
+            
+            $eventoCriado = $this->criarEventosRecorrentes($evento, $numerox);
         }
+    
         http_response_code(201);
         echo json_encode(['status' => $eventoCriado]);
     }
-
+    
     private function criarEventosRecorrentes(Evento $evento, $eventoBaseId) {
         $recorrencia = $evento->getRecorrencia();
         $dataInicial = new DateTime($evento->getDataInicial());
         $dataFinalOriginal = new DateTime($evento->getDataFinal());
-
+    
         $intervalo = match($recorrencia) {
             'diaria' => new DateInterval('P1D'),
             'semanal' => new DateInterval('P1W'),
@@ -125,11 +138,26 @@ class EventoController {
                 $eventoRecorrente->setDataFinal($dataRecorrenteFormatada);
                 $eventoRecorrente->setEventoBaseId($eventoBaseId);
     
-                $this->eventoRepository->criarEvento($eventoRecorrente);
+                if (!$this->eventoRepository->criarEvento($eventoRecorrente)) {
+                    return false;
+                }
             }
+            return true;
         }
+    
+        return false;
     }
     
+
+    public function gerarStringAlfanumerica($tamanho) {
+        $caracteres = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $stringAleatoria = '';
+        for ($i = 0; $i < $tamanho; $i++) {
+            $index = rand(0, strlen($caracteres) - 1);
+            $stringAleatoria .= $caracteres[$index];
+        }
+        return $stringAleatoria;
+    }
     
 
     #[Router('/eventos/{id}', methods: ['PUT'])]
@@ -168,14 +196,15 @@ class EventoController {
     }
 
     #[Router('/eventos/nome/{nome}', methods: ['DELETE'])]
-public function excluirEventosPorNome($nome) {
-    $eventosExcluidos = $this->eventoRepository->excluirEventosPorNome($nome);
-    if ($eventosExcluidos) {
-        http_response_code(200);
-        echo json_encode(['status' => true, 'message' => 'Evento(s) excluído(s) com sucesso.']);
-    } else {
-        http_response_code(404);
-        echo json_encode(['status' => false, 'message' => 'Evento não encontrado.']);
+    public function excluirEventosPorNome($nome) {
+        $eventosExcluidos = $this->eventoRepository->excluirEventosPorNome($nome);
+        if ($eventosExcluidos) {
+            http_response_code(200);
+            echo json_encode(['status' => true, 'message' => 'Evento(s) excluído(s) com sucesso.']);
+        } else {
+            http_response_code(404);
+            echo json_encode(['status' => false, 'message' => 'Evento não encontrado.']);
+        }
     }
-}
+
 }
