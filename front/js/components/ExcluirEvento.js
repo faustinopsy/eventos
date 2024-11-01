@@ -1,6 +1,6 @@
 export default {
     template: `
-        <div>
+        <div class="form-exclusao">
             <h3>Excluir Evento por Usuário (excluir todos de um usuario)</h3>
             <input v-model="nome" placeholder="Nome do Usuario para excluir" />
             <button @click="excluirEventoUser">Excluir Evento</button>

@@ -6,12 +6,14 @@ export default {
           <option v-for="(cor, titulo) in salas" :key="titulo" :value="titulo">{{ titulo }}</option>
         </select>
         <input v-model="evento.descricao" placeholder="Descrição" />
+        <div>
         <input v-model="evento.datainicial" type="date" required />
-         <input v-model="evento.horarioinicial" type="time" required />
+        <input v-model="evento.horarioinicial" type="time" required />
         <input v-model="evento.datafinal" type="date" />
         <input v-model="evento.horariofinal" type="time" required />
+        </div>
         <select v-model="evento.recorrencia">
-          <option value="nenhuma">Nenhuma</option>
+          <option value="nenhuma">Recorrência</option>
           <option value="diaria">Diária</option>
           <option value="semanal">Semanal</option>
           <option value="mensal">Mensal</option>

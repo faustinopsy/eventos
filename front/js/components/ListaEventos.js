@@ -2,7 +2,7 @@ export default {
     template: `
         <div>
             <select v-model="filtroNome" @change="buscarEventos">
-                <option value="">Todos</option>
+                <option value="">Todos Usuários</option>
                 <option v-for="usuario in usuarios" :key="usuario" :value="usuario">{{ usuario }}</option>
             </select>
             <div id="calendar"></div>
