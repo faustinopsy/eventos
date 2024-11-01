@@ -20,6 +20,7 @@ export default {
             </div>
         </div>
     `,
+    props: ['urlbase'],
     data() {
         return { 
             eventos: '',
@@ -30,7 +31,7 @@ export default {
     },
     methods: {
         async buscaEvento() {
-            const response = await fetch('http://localhost:8080/eventos');
+            const response = await fetch(`${this.urlbase}/eventos`);
             this.eventos = await response.json();
         },
         buscarEventos() {

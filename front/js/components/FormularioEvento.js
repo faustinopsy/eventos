@@ -27,6 +27,7 @@ export default {
         <p v-if="mensagem">{{ mensagem }}</p>
       </form>
     `,
+    props: ['urlbase'],
     data() {
         return { 
             evento: {
@@ -55,7 +56,7 @@ export default {
         async criarEvento() {
             this.evento.cor = this.salas[this.evento.titulo];
 
-            const response = await fetch('http://localhost:8080/eventos', {
+            const response = await fetch(`${this.urlbase}/eventos`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(this.evento)
@@ -69,7 +70,7 @@ export default {
             }
         },
         async buscaUsuarios() {
-            const response = await fetch('http://localhost:8080/users');
+            const response = await fetch(`${this.urlbase}/users`);
             this.usuarios = await response.json();
         },
     },

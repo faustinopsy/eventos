@@ -10,6 +10,7 @@ export default {
             <p v-if="mensagem">{{ mensagem }}</p>
         </div>
     `,
+    props: ['urlbase'],
     data() {
         return {
             nome: '',
@@ -19,7 +20,7 @@ export default {
     },
     methods: {
         async excluirEventoUser() {
-            const response = await fetch(`http://localhost:8080/eventos/nome/${this.nome}`, {
+            const response = await fetch(`${this.urlbase}/eventos/nome/${this.nome}`, {
                 method: 'DELETE'
             });
             const result = await response.json();
@@ -32,7 +33,7 @@ export default {
             }
         },
         async excluirEventoID() {
-            const response = await fetch(`http://localhost:8080/eventos/forenkey/${this.id}`, {
+            const response = await fetch(`${this.urlbase}/eventos/forenkey/${this.id}`, {
                 method: 'DELETE'
             });
             const result = await response.json();
