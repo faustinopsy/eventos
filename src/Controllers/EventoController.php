@@ -184,17 +184,17 @@ class EventoController {
         }
     }
 
-    #[Router('/eventos/{id}', methods: ['DELETE'])]
-    public function excluirEvento($id) {
-        if ($this->eventoRepository->excluirEvento($id)) {
+    #[Router('/eventos/forenkey/{nome}', methods: ['DELETE'])]
+    public function excluirEventosPorID($nome) {
+        $eventosExcluidos = $this->eventoRepository->excluirEventosPorID($nome);
+        if ($eventosExcluidos) {
             http_response_code(200);
-            echo json_encode(['status' => true, 'mensagem' => 'Evento excluído com sucesso']);
+            echo json_encode(['status' => true, 'message' => 'Evento(s) excluído(s) com sucesso.']);
         } else {
             http_response_code(404);
-            echo json_encode(['status' => false, 'mensagem' => 'Evento não encontrado']);
+            echo json_encode(['status' => false, 'message' => 'Evento não encontrado.']);
         }
     }
-
     #[Router('/eventos/nome/{nome}', methods: ['DELETE'])]
     public function excluirEventosPorNome($nome) {
         $eventosExcluidos = $this->eventoRepository->excluirEventosPorNome($nome);

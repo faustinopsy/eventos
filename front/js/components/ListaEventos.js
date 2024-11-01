@@ -6,13 +6,26 @@ export default {
                 <option v-for="usuario in usuarios" :key="usuario" :value="usuario">{{ usuario }}</option>
             </select>
             <div id="calendar"></div>
+
+            <div v-if="eventoSelecionado" class="modal">
+                <div class="modal-content">
+                    <h3>Detalhes do Evento</h3>
+                    <p><strong>ID:</strong> {{ eventoSelecionado.evento_base_id }}</p>
+                    <p><strong>Título:</strong> {{ eventoSelecionado.titulo }}</p>
+                    <p><strong>Descrição:</strong> {{ eventoSelecionado.descricao }}</p>
+                    <p><strong>Data Inicial:</strong> {{ eventoSelecionado.datainicial }}</p>
+                    <p><strong>Data Final:</strong> {{ eventoSelecionado.datafinal }}</p>
+                    <button @click="fecharModal">Fechar</button>
+                </div>
+            </div>
         </div>
     `,
     data() {
         return { 
             eventos: '',
             filtroNome: '',
-            usuarios: [] 
+            usuarios: [],
+            eventoSelecionado: null
         };
     },
     methods: {
@@ -61,10 +74,23 @@ export default {
                 events: eventos.map(evento => ({
                     title: evento.titulo,
                     start: evento.datainicial,
-                    end: evento.datafinal
-                }))
+                    end: evento.datafinal,
+                    extendedProps: {
+                        id: evento.evento_base_id,
+                        descricao: evento.descricao,
+                    
+                    }
+                })),
+                eventClick: this.mostrarDetalhesEvento
             });
             calendar.render();
+        },
+        mostrarDetalhesEvento(info) {
+            const evento = this.eventos.find(evento => evento.titulo === info.event.title);
+            this.eventoSelecionado = evento;
+        },
+        fecharModal() {
+            this.eventoSelecionado = null;
         },
         carregarUsuarios() {
             const nomes = this.eventos.map(evento => evento.nome);

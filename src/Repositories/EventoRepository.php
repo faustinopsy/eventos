@@ -22,7 +22,8 @@ class EventoRepository {
                 datainicial TEXT NOT NULL,
                 datafinal TEXT,
                 recorrencia TEXT,
-                nome TEXT NOT NULL
+                nome TEXT NOT NULL,
+                evento_base_id TEXT
             )
         ";
         $this->conn->exec($query);
@@ -36,7 +37,7 @@ class EventoRepository {
     }
 
     public function criarEvento(Evento $evento) {
-        $query = "INSERT INTO eventos (evento_base_id, titulo, descricao, datainicial, datafinal, recorrencia, nome) 
+        $query = "INSERT INTO eventos (evento_base_id, titulo, descricao, datainicial, datafinal, recorrencia, nome)
                   VALUES (:evento_base_id, :titulo, :descricao, :datainicial, :datafinal, :recorrencia, :nome)";
         $stmt = $this->conn->prepare($query);
     
@@ -90,13 +91,6 @@ class EventoRepository {
         return $stmt->execute();
     }
 
-    public function excluirEvento($eventoId) {
-        $query = "DELETE FROM eventos WHERE evento_id = :evento_id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":evento_id", $eventoId, PDO::PARAM_INT);
-        return $stmt->execute();
-    }
-
     public function obterEventoPorNome($nome) {
         $query = "SELECT * FROM eventos WHERE nome LIKE :nome";
         $stmt = $this->conn->prepare($query);
@@ -115,6 +109,12 @@ class EventoRepository {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function excluirEventosPorID($id) {
+        $query = "DELETE FROM eventos WHERE evento_base_id = :evento_base_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":evento_base_id", $id, PDO::PARAM_STR);
+        return $stmt->execute();
+    }
     public function excluirEventosPorNome($nome) {
         $query = "DELETE FROM eventos WHERE nome = :nome OR evento_base_id IN (SELECT evento_id FROM eventos WHERE nome = :nome)";
         $stmt = $this->conn->prepare($query);

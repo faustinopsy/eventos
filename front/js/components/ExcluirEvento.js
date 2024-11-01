@@ -1,20 +1,24 @@
 export default {
     template: `
         <div>
-            <h3>Excluir Evento</h3>
-            <input v-model="nome" placeholder="Nome do evento para excluir" />
-            <button @click="excluirEvento">Excluir Evento</button>
+            <h3>Excluir Evento por Usuário (excluir todos de um usuario)</h3>
+            <input v-model="nome" placeholder="Nome do Usuario para excluir" />
+            <button @click="excluirEventoUser">Excluir Evento</button>
+            <h3>Excluir Evento por ID</h3>
+            <input v-model="id" placeholder="ID do evento para excluir" />
+            <button @click="excluirEventoID">Excluir Evento ID</button>
             <p v-if="mensagem">{{ mensagem }}</p>
         </div>
     `,
     data() {
         return {
             nome: '',
-            mensagem: ''
+            mensagem: '',
+            id: ''
         };
     },
     methods: {
-        async excluirEvento() {
+        async excluirEventoUser() {
             const response = await fetch(`http://localhost:8080/eventos/nome/${this.nome}`, {
                 method: 'DELETE'
             });
@@ -22,6 +26,19 @@ export default {
             if (result.status) {
                 this.mensagem = 'Evento(s) excluído(s) com sucesso.';
                 this.nome = '';
+                this.$emit('eventoExcluido');
+            } else {
+                this.mensagem = 'Evento não encontrado.';
+            }
+        },
+        async excluirEventoID() {
+            const response = await fetch(`http://localhost:8080/eventos/forenkey/${this.id}`, {
+                method: 'DELETE'
+            });
+            const result = await response.json();
+            if (result.status) {
+                this.mensagem = 'Evento(s) excluído(s) com sucesso.';
+                this.id = '';
                 this.$emit('eventoExcluido');
             } else {
                 this.mensagem = 'Evento não encontrado.';
