@@ -73,8 +73,8 @@ export default {
 				dayMaxEvents: true,
                 events: eventos.map(evento => ({
                     title: evento.titulo,
-                    start: evento.datainicial,
-                    end: evento.datafinal,
+                    start: `${evento.datainicial}T${evento.horarioinicial}`,
+                    end: `${evento.datafinal}T${evento.horariofinal}`,   
                     backgroundColor: evento.cor,
                     extendedProps: {
                         id: evento.evento_base_id,

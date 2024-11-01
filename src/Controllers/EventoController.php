@@ -90,7 +90,9 @@ class EventoController {
             $evento->setTitulo($data->titulo);
             $evento->setDescricao($data->descricao);
             $evento->setDataInicial($data->datainicial);
-            $evento->setDataFinal($data->datafinal);
+            $evento->setDescricao($data->descricao);
+            $evento->setHorarioInicial($data->horarioinicial);
+            $evento->setHorarioFinal($data->horariofinal);
             $evento->setRecorrencia($data->recorrencia);
             $evento->setNome($data->nome);
             $evento->setCor($data->cor);
@@ -102,6 +104,8 @@ class EventoController {
             $evento->setDescricao($data->descricao);
             $evento->setDataInicial($data->datainicial);
             $evento->setDataFinal($data->datafinal);
+            $evento->setHorarioInicial($data->horarioinicial);
+            $evento->setHorarioFinal($data->horariofinal);
             $evento->setRecorrencia($data->recorrencia);
             $evento->setNome($data->nome);
             $evento->setCor($data->cor);
@@ -172,6 +176,8 @@ class EventoController {
             $evento->setDescricao($data->descricao ?? $eventoExistente['descricao']);
             $evento->setDataInicial($data->datainicial ?? $eventoExistente['datainicial']);
             $evento->setDataFinal($data->datafinal ?? $eventoExistente['datafinal']);
+            $evento->setHorarioInicial($data->horarioinicial  ?? $eventoExistente['horarioinicial']);
+            $evento->setHorarioFinal($data->horariofinal  ?? $eventoExistente['horariofinal']);
             $evento->setRecorrencia($data->recorrencia ?? $eventoExistente['recorrencia']);
             $evento->setNome($data->nome ?? $eventoExistente['nome']);
             

@@ -7,7 +7,9 @@ export default {
         </select>
         <input v-model="evento.descricao" placeholder="Descrição" />
         <input v-model="evento.datainicial" type="date" required />
+         <input v-model="evento.horarioinicial" type="time" required />
         <input v-model="evento.datafinal" type="date" />
+        <input v-model="evento.horariofinal" type="time" required />
         <select v-model="evento.recorrencia">
           <option value="nenhuma">Nenhuma</option>
           <option value="diaria">Diária</option>
@@ -28,8 +30,10 @@ export default {
             evento: {
                 titulo: '', 
                 descricao: '', 
-                datainicial: '', 
-                datafinal: '', 
+                datainicial: '',
+                horarioinicial: '', 
+                datafinal: '',
+                horariofinal: '',  
                 recorrencia: 'nenhuma', 
                 nome: '',
                 cor: ''

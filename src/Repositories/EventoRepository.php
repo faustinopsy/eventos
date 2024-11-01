@@ -21,6 +21,8 @@ class EventoRepository {
                 descricao TEXT,
                 datainicial TEXT NOT NULL,
                 datafinal TEXT,
+                horarioinicial TEXT,
+                horariofinal TEXT,
                 recorrencia TEXT,
                 nome TEXT NOT NULL,
                 evento_base_id TEXT,
@@ -38,8 +40,8 @@ class EventoRepository {
     }
 
     public function criarEvento(Evento $evento) {
-        $query = "INSERT INTO eventos (evento_base_id, titulo, descricao, datainicial, datafinal, recorrencia, nome,cor)
-                  VALUES (:evento_base_id, :titulo, :descricao, :datainicial, :datafinal, :recorrencia, :nome, :cor)";
+        $query = "INSERT INTO eventos (evento_base_id, titulo, descricao, datainicial, datafinal, horarioinicial, horariofinal, recorrencia, nome, cor)
+                  VALUES (:evento_base_id, :titulo, :descricao, :datainicial, :datafinal, :horarioinicial, :horariofinal, :recorrencia, :nome, :cor)";
         $stmt = $this->conn->prepare($query);
     
         $eventoBaseId = $evento->getEventoBaseId();
@@ -47,6 +49,8 @@ class EventoRepository {
         $descricao = $evento->getDescricao();
         $datainicial = $evento->getDataInicial();
         $datafinal = $evento->getDataFinal();
+        $horarioinicial = $evento->getHorarioInicial();
+        $horariofinal = $evento->getHorarioFinal();
         $recorrencia = $evento->getRecorrencia();
         $nome = $evento->getNome();
         $cor = $evento->getCor();
@@ -56,6 +60,8 @@ class EventoRepository {
         $stmt->bindParam(":descricao", $descricao);
         $stmt->bindParam(":datainicial", $datainicial);
         $stmt->bindParam(":datafinal", $datafinal);
+        $stmt->bindParam(":horarioinicial", $horarioinicial);
+        $stmt->bindParam(":horariofinal", $horariofinal);
         $stmt->bindParam(":recorrencia", $recorrencia);
         $stmt->bindParam(":nome", $nome);
         $stmt->bindParam(":cor", $cor);
@@ -73,22 +79,29 @@ class EventoRepository {
     }
 
     public function atualizarEvento(Evento $evento) {
+        $query = "UPDATE eventos SET titulo = :titulo, descricao = :descricao, datainicial = :datainicial, datafinal = :datafinal, horarioinicial = :horarioinicial, horariofinal = :horariofinal, recorrencia = :recorrencia, nome = :nome, cor = :cor WHERE evento_id = :evento_id";
+        $stmt = $this->conn->prepare($query);
+
         $titulo = $evento->getTitulo();
         $descricao = $evento->getDescricao();
         $datainicial = $evento->getDataInicial();
         $datafinal = $evento->getDataFinal();
+        $horarioinicial = $evento->getHorarioInicial();
+        $horariofinal = $evento->getHorarioFinal();
         $recorrencia = $evento->getRecorrencia();
         $nome = $evento->getNome();
+        $cor = $evento->getCor();
         $eventoId = $evento->getEventoId();
 
-        $query = "UPDATE eventos SET titulo = :titulo, descricao = :descricao, datainicial = :datainicial, datafinal = :datafinal, recorrencia = :recorrencia, nome = :nome WHERE evento_id = :evento_id";
-        $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":titulo", $titulo);
         $stmt->bindParam(":descricao", $descricao);
         $stmt->bindParam(":datainicial", $datainicial);
         $stmt->bindParam(":datafinal", $datafinal);
+        $stmt->bindParam(":horarioinicial", $horarioinicial);
+        $stmt->bindParam(":horariofinal", $horariofinal);
         $stmt->bindParam(":recorrencia", $recorrencia);
         $stmt->bindParam(":nome", $nome);
+        $stmt->bindParam(":cor", $cor);
         $stmt->bindParam(":evento_id", $eventoId, PDO::PARAM_INT);
         
         return $stmt->execute();
@@ -118,11 +131,11 @@ class EventoRepository {
         $stmt->bindParam(":evento_base_id", $id, PDO::PARAM_STR);
         return $stmt->execute();
     }
+
     public function excluirEventosPorNome($nome) {
         $query = "DELETE FROM eventos WHERE nome = :nome OR evento_base_id IN (SELECT evento_id FROM eventos WHERE nome = :nome)";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":nome", $nome, PDO::PARAM_STR);
         return $stmt->execute();
     }
-    
 }
